@@ -43,10 +43,7 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             &mut file_read
         };
 
-        let mut contents = String::new();
-        reader.read_to_string(&mut contents)?;
-
-        for line in trgrep::search(&config.pattern, &contents) {
+        for line in reader.lines().map(|l| l.unwrap().contains(&config.pattern)) {
             println!("{line}");
         }
     }
