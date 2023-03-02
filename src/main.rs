@@ -14,6 +14,10 @@ struct Config {
     ///
     /// If no FILE is given, read standard input.
     files: Vec<String>,
+
+    /// Ignores the case of the search string
+    #[arg(short, long)]
+    ignore_case: bool,
 }
 
 fn main() {
@@ -43,7 +47,10 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             &mut file_read
         };
 
-        for line in reader.lines().map(|l| l.unwrap().contains(&config.pattern)) {
+        for line in reader.lines().map(|l| l.unwrap()) {
+            if !trgrep::contains_pattern(&line, &config.pattern, config.ignore_case) {
+                continue;
+            }
             println!("{line}");
         }
     }
