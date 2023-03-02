@@ -19,6 +19,10 @@ struct Config {
     #[arg(short, long)]
     ignore_case: bool,
 
+    /// Selects non-matching lines
+    #[arg(short = 'v', long)]
+    invert_match: bool,
+
     /// Matches only whole words
     #[arg(short, long)]
     word_regexp: bool,
@@ -52,7 +56,9 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
         };
 
         for line in reader.lines().map(|l| l.unwrap()) {
-            if !trgrep::contains_pattern(&line, &config.pattern, config.ignore_case, config.word_regexp) {
+            let match_flag = trgrep::contains_pattern(&line, &config.pattern, config.ignore_case, config.word_regexp);
+            let match_flag = if config.invert_match { !match_flag } else { match_flag };
+            if !match_flag {
                 continue;
             }
             println!("{line}");
