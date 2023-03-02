@@ -18,6 +18,10 @@ struct Config {
     /// Ignores the case of the search string
     #[arg(short, long)]
     ignore_case: bool,
+
+    /// Matches only whole words
+    #[arg(short, long)]
+    word_regexp: bool,
 }
 
 fn main() {
@@ -48,7 +52,7 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
         };
 
         for line in reader.lines().map(|l| l.unwrap()) {
-            if !trgrep::contains_pattern(&line, &config.pattern, config.ignore_case) {
+            if !trgrep::contains_pattern(&line, &config.pattern, config.ignore_case, config.word_regexp) {
                 continue;
             }
             println!("{line}");
