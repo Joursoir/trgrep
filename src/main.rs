@@ -28,6 +28,10 @@ struct Config {
     #[arg(short = 'v', long)]
     invert_match: bool,
 
+    /// Prefixes each matching line with the line number
+    #[arg(short = 'n', long)]
+    line_number: bool,
+
     /// Matches only whole words
     #[arg(short, long)]
     word_regexp: bool,
@@ -69,15 +73,19 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             &mut file_read
         };
 
-        for line in reader.lines().map(|l| l.unwrap()) {
+        for (idx, line) in reader.lines().map(|l| l.unwrap()).enumerate() {
             let match_flag = trgrep::contains_pattern(&line, &config.pattern, config.ignore_case, config.word_regexp);
             let match_flag = if config.invert_match { !match_flag } else { match_flag };
             if !match_flag {
                 continue;
             }
 
-            let formatted_output = if !config.no_filename {
+            let formatted_output = if !config.no_filename && config.line_number {
+                format!("{}:{}:{}", file, idx + 1, line)
+            } else if !config.no_filename {
                 format!("{}:{}", file, line)
+            } else if config.line_number {
+                format!("{}:{}", idx + 1, line)
             } else {
                 format!("{}", line)
             };
