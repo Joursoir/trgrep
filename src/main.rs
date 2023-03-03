@@ -31,13 +31,22 @@ struct Config {
     /// Matches only whole words
     #[arg(short, long)]
     word_regexp: bool,
+
+    /// Suppresses the display of filenames
+    #[arg(short = 'h', long)]
+    no_filename: bool,
 }
 
 fn main() {
     let mut config = Config::parse();
 
-    if config.files.is_empty() {
-        config.files.push(String::from("-"));
+    match config.files.len() {
+        0 => {
+            config.files.push(String::from("-"));
+            config.no_filename = true;
+        }
+        1 => config.no_filename = true,
+        _ => (),
     }
 
     if let Err(e) = run(config) {
@@ -66,7 +75,14 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             if !match_flag {
                 continue;
             }
-            println!("{line}");
+
+            let formatted_output = if !config.no_filename {
+                format!("{}:{}", file, line)
+            } else {
+                format!("{}", line)
+            };
+
+            println!("{}", formatted_output);
         }
     }
 
