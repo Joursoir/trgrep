@@ -7,6 +7,7 @@ use clap::Parser;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)] // Read from `Cargo.toml`
+#[clap(disable_help_flag = true)]
 struct Config {
     /// The pattern to look for
     pattern: String,
@@ -14,6 +15,10 @@ struct Config {
     ///
     /// If no FILE is given, read standard input.
     files: Vec<String>,
+
+    /// Print a help text and exit
+    #[arg(long, action = clap::ArgAction::Help)]
+    help: Option<bool>,
 
     /// Ignores the case of the search string
     #[arg(short, long)]
