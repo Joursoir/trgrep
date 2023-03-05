@@ -36,6 +36,10 @@ struct Config {
     #[arg(short, long)]
     word_regexp: bool,
 
+    /// Displays only the filenames of files that contain matches
+    #[arg(short = 'l', long)]
+    files_with_matches: bool,
+
     /// Suppresses the display of filenames
     #[arg(short = 'h', long)]
     no_filename: bool,
@@ -60,7 +64,7 @@ fn main() {
 }
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    for file in config.files {
+    'outer: for file in config.files {
         // On-Stack Dynamic Dispatch
         let (mut stdin_read, mut file_read);
 
@@ -78,6 +82,11 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             let match_flag = if config.invert_match { !match_flag } else { match_flag };
             if !match_flag {
                 continue;
+            }
+
+            if config.files_with_matches {
+                println!("{file}");
+                continue 'outer;
             }
 
             let formatted_output = if !config.no_filename && config.line_number {
