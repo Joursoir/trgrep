@@ -28,6 +28,10 @@ struct Config {
     #[arg(short = 'v', long)]
     invert_match: bool,
 
+    /// Displays only a count of the number of lines that match the search string
+    #[arg(short, long)]
+    count: bool,
+
     /// Prefixes each matching line with the line number
     #[arg(short = 'n', long)]
     line_number: bool,
@@ -65,6 +69,7 @@ fn main() {
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
     'outer: for file in config.files {
+        let mut count: usize = 0;
         // On-Stack Dynamic Dispatch
         let (mut stdin_read, mut file_read);
 
@@ -87,6 +92,9 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             if config.files_with_matches {
                 println!("{file}");
                 continue 'outer;
+            } else if config.count {
+                count += 1;
+                continue;
             }
 
             let formatted_output = if !config.no_filename && config.line_number {
@@ -100,6 +108,10 @@ fn run(config: Config) -> Result<(), Box<dyn Error>> {
             };
 
             println!("{}", formatted_output);
+        }
+
+        if config.count {
+            println!("{}:{}", file, count);
         }
     }
 
