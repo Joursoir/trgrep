@@ -1,0 +1,27 @@
+apple
+banana
+cherry
+date
+elderberry
+fig
+grape
+honeydew
+indigo
+jicama
+kumquat
+lemon
+mango
+nectarine
+orange
+peach
+quince
+raspberry
+applemelon
+strawberry
+tangerine
+ugli fruit
+vanilla
+watermelon
+xylophone
+yellow squash
+zucchini
